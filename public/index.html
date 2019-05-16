@@ -23,6 +23,7 @@
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
         crossorigin="anonymous"></script>
         <script src="talkify.min.js"></script>
+        <script src="my-talkify.js"></script>
 
 <div class="container">
     <div class="card border-success mt-5">
@@ -40,6 +41,7 @@
                         <input type="radio" name="service" value="female"> Read for me<br>
                     </div>
                 </form>
+                <button onclick="speak('welcome')">Try Me</button>
             </div>
         </div>
     </div>
@@ -61,6 +63,11 @@ function readURL(input) {
 
             reader.readAsDataURL(input.files[0]);
         }
+    }
+
+    function speak(str) {
+        var player = new talkify.TtsPlayer(); //or new talkify.Html5Player()
+        player.playText(str);
     }
 </script>
 
