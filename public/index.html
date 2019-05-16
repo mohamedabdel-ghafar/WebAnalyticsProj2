@@ -23,7 +23,7 @@
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
         crossorigin="anonymous"></script>
         <script src="talkify.min.js"></script>
-        <script src="my-talkify.js"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 <div class="container">
     <div class="card border-success mt-5">
@@ -37,17 +37,18 @@
                     <br>
                     <div style="margin-top:5%;">
                         <h3>Choose Your Service</h3>
-                        <input type="radio" name="service" value="male"> What's this?<br>
-                        <input type="radio" name="service" value="female"> Read for me<br>
+                        <input type="radio" name="service" value="identify"> What's this?<br>
+                        <input type="radio" name="service" value="read"> Read for me<br>
                     </div>
                 </form>
-                <button onclick="speak('welcome')">Try Me</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+var player = new talkify.TtsPlayer(); //or new talkify.Html5Player()
+let currImage;
 function readURL(input) {
     if (input.files && input.files[0]) {
         console.log('hi');
@@ -63,12 +64,19 @@ function readURL(input) {
 
             reader.readAsDataURL(input.files[0]);
         }
-    }
 
-    function speak(str) {
-        var player = new talkify.TtsPlayer(); //or new talkify.Html5Player()
-        player.playText(str);
-    }
+    let img = input.files[0]
+    let fd= new FormData()
+
+    fd.append('photo', img)
+        axios({
+        method: 'post',
+        url: '/upload',
+        data: fd,
+        }).then(res => currImage = res.data.destination)
+}
+
+
 </script>
 
 </body>
