@@ -23,6 +23,7 @@
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
         crossorigin="anonymous"></script>
         <script src="talkify.min.js"></script>
+        <script src="my-talkify.js"></script>
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script src='https://unpkg.com/tesseract.js@v2.0.0-alpha.4/dist/tesseract.min.js'></script>
 
@@ -42,15 +43,15 @@
                         <input type="radio" name="service" value="read"> Read for me<br>
                     </div>
                 </form>
+                <button onclick="provideService()">Process</button>
             </div>
         </div>
     </div>
 </div> 
 
 <script>
-var player = new talkify.TtsPlayer();
 let currImage;
-
+let checked;
 
 function readURL(input) {
     if (input.files && input.files[0]) {
@@ -78,8 +79,8 @@ function readURL(input) {
         data: fd,
         }).then(res => {
             console.log(res.data);
-            currImage = res.data.path
-            readImage();
+            currImage = res.data.filename
+            // readImage();
         })
 }
 
@@ -87,10 +88,28 @@ const { TesseractWorker } = Tesseract;
 const worker = new TesseractWorker();
 
 function readImage() {
-    const prm  = worker
-    .recognize(currImage)
+    const prm  = worker.recognize(currImage)
     console.log(prm);
-    prm.then(res => console.log(res));
+    var player = new talkify.TtsPlayer();
+    prm.then(res => player.playText(res.text));
+}
+
+function provideService() {
+    let services = document.getElementsByName('service');
+    for (service of services) {
+        if (service.checked) {
+            checked = service.value;
+        }
+    }
+    if (!checked) { 
+        alert("you have to choose a service!");
+    } else {
+        if (checked == "read") {
+            readImage();
+        } else {
+            console.log("handle identification later");
+        }
+    }
 }
 
 </script>
