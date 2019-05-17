@@ -26,8 +26,10 @@
         <script src="my-talkify.js"></script>
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script src='https://unpkg.com/tesseract.js@v2.0.0-alpha.4/dist/tesseract.min.js'></script>
+       <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.0/dist/tf.min.js"></script>
+       <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"> </script>
 
- <div class="container">
+       <div class="container">
     <div class="card border-success mt-5">
         <h1 class="card-header">Upload Image</h1>
         <div class="card-body">
@@ -46,11 +48,13 @@
             </div>
         </div>
     </div>
-</div> 
+</div>
 
 <script>
 let currImage;
 let checked;
+let imgTag = document.getElementById('blah');
+let player = new talkify.TtsPlayer();
 
 function readURL(input) {
     if (input.files && input.files[0]) {
@@ -85,14 +89,28 @@ function readURL(input) {
 
 const { TesseractWorker } = Tesseract;
 const worker = new TesseractWorker();
-
 function readImage() {
     const prm  = worker.recognize(currImage)
     console.log(prm);
-    var player = new talkify.TtsPlayer();
+    // var player = new talkify.TtsPlayer();
     prm.then(res => player.playText(res.text));
 }
+function segmentImage(){
+    // import * as cocoSsd from "@tensorflow-models/coco-ssd";
+    // cocoSsd.load().then(model =>model.detect(currImage)).then(predictions => console.log(predictions));
+    cocoSsd.load().then(model => {
+        // detect objects in the image.
+        model.detect(imgTag).then(predictions => {
+            if (predictions[0]){
 
+                var to_say = "What you are showing right now is probably a " +predictions[0].class;
+                player.playText(to_say);
+            }else{
+                player.playText("Can not recognize this object, sorry");
+            }
+        });
+    });
+}
 function provideService() {
     let services = document.getElementsByName('service');
     for (service of services) {
@@ -106,6 +124,8 @@ function provideService() {
         if (checked == "read") {
             readImage();
         } else {
+            // provide segmentation service here !
+            segmentImage();
             console.log("handle identification later");
         }
     }
